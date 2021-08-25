@@ -15,7 +15,7 @@
       //Read the data
       d3.json("http://localhost:3001/api/temps", 
        function (temps) {
-        let data = temps.data;
+        let data = temps;
         console.log(data);
         console.log("id:", data[0].id);
         console.log("value:", data[0].outdoor);

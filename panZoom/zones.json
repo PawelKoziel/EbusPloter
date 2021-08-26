@@ -1,0 +1,542 @@
+[
+    {
+        "ID": 1,
+        "Name": "Z001",
+        "Load": true,
+        "DisplayName": "Gungsong Fortress"
+    },
+    {
+        "ID": 2,
+        "Name": "Z002",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 3,
+        "Name": "Z003",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 4,
+        "Name": "Z004",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 5,
+        "Name": "Z005",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 6,
+        "Name": "Z006",
+        "Load": true,
+        "DisplayName": "Padsong Fortress"
+    },
+    {
+        "ID": 7,
+        "Name": "Z007",
+        "Load": true,
+        "DisplayName": ""
+    },
+    {
+        "ID": 8,
+        "Name": "Z008",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 9,
+        "Name": "Z009",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z010",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z011",
+        "Load": true,
+        "DisplayName": "Hanma Palace"
+    },
+    {
+        "ID": 1,
+        "Name": "Z012",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z013",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z014",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z015",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z016",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z017",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z018",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z019",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z020",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z021",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 3,
+        "Name": "Z034",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 3,
+        "Name": "Z037",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 3,
+        "Name": "Z038",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 3,
+        "Name": "Z039",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 4,
+        "Name": "Z040",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 4,
+        "Name": "Z043",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 4,
+        "Name": "Z046",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 4,
+        "Name": "Z049",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 5,
+        "Name": "Z050",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 5,
+        "Name": "Z055",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 5,
+        "Name": "Z056",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 5,
+        "Name": "Z059",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 7,
+        "Name": "Z071",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 7,
+        "Name": "Z072",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 7,
+        "Name": "Z073",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 7,
+        "Name": "Z074",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 7,
+        "Name": "Z075",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 7,
+        "Name": "Z076",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 7,
+        "Name": "Z078",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 8,
+        "Name": "Z080",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 8,
+        "Name": "Z081",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 8,
+        "Name": "Z082",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 8,
+        "Name": "Z084",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 8,
+        "Name": "Z088",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 8,
+        "Name": "Z089",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 9,
+        "Name": "Z090",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 9,
+        "Name": "Z091",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 9,
+        "Name": "Z094",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 9,
+        "Name": "Z095",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 9,
+        "Name": "Z098",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z101",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z104",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z105",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z110",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z112",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z115",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z116",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z119",
+        "Load": false,
+        "DisplayName": "Nangin Track"
+    },
+    {
+        "ID": 1,
+        "Name": "Z120",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z124",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z125",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z126",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z138",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z140",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z141",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z142",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z143",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z195",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 1,
+        "Name": "Z196",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z201",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z202",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z206",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z222",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z234",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z235",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z236",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z237",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z241",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z267",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z270",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z275",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z279",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z283",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z287",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 2,
+        "Name": "Z291",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 3,
+        "Name": "Z302",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 3,
+        "Name": "Z303",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 3,
+        "Name": "Z304",
+        "Load": false,
+        "DisplayName": ""
+    },
+    {
+        "ID": 3,
+        "Name": "Z310",
+        "Load": false,
+        "DisplayName": ""
+    }
+];

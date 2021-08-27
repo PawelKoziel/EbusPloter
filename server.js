@@ -4,68 +4,59 @@ var app = express();
 var settings = require("./package.json");
 var sqlite3 = require("sqlite3").verbose();
 const path = require("path");
-
+const dbPath = 'vaillant.db';
 
 app.engine(".html", require("ejs").__express);
 app.set("views", [path.join(__dirname, "views")]);//, path.join(__dirname, "panZoom")]);
 app.set("view engine", "html");
 app.use(express.static("views"));
-//app.use(express.static("panZoom"));
+
+const ip = settings.interface;
+const port = settings.port;
+
+var apiAddress = `http://${ip}:${port}`
 
 // Start server
-app.listen(settings.port, () => {
-  console.log("http://localhost:%PORT%".replace("%PORT%", settings.port));
-});
+app.listen(port, ip,
+  () => console.log(apiAddress));
 
-// Insert here other API endpoints
-app.get("/api/temps", (req, res) => {
-  var sql = "select * from temps";
-
-  let db = new sqlite3.Database(path.resolve("vaillant.db"), (err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    console.log("Connected to the Vaillant database.");
-  });
-  db.all(sql, (err, row) => {
-    res.json(row);
-  });
-  db.close((err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    console.log("Close the database connection.");
-  });
-});
-
-
-app.get("/api/parms", (req, res) => {
-  var sql = "select * from params";
-
-  let db = new sqlite3.Database(path.resolve("vaillant.db"), (err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    console.log("Connected to the Vaillant database.");
-  });
-  db.all(sql, (err, row) => {
-    res.json(row);
-  });
-  db.close((err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    console.log("Close the database connection.");
-  });
-});
-
-
-
+// www  
 app.get("/", function (req, res) {
   res.render("plotTemp");
 });
 
+// temp API
+app.get("/api/temps", (req, res) => {
+  var sql = "select * from temps";
+  getDbData(sql, req, res);
+});
 
+// param API
+app.get("/api/parms", (req, res) => {
+  var sql = "select * from params";
+  getDbData(sql, req, res);
+});
+
+
+function getDbData(sql, req, res) {
+  let db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log("Connected to the Vaillant database.");
+  });
+  db.all(sql, (err, row) => {
+    res.json(row);
+  });
+  db.close((err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log("Close the database connection.");
+  });
+}
+
+module.exports = app;
 // app.get("/a", function (req, res) {
 //   res.render("index");
 // });

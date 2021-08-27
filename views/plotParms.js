@@ -1,7 +1,7 @@
-import { getParmData } from './getData.js'
+import { getData } from './getData.js'
 
 function main() {
-  getParmData('parms')
+  getData('parms')
     .then(
       data => {
         drawChart(data);
@@ -10,9 +10,7 @@ function main() {
       error => console.log(error)
     )
 }
-
 main();
-
 
 // 1
 // flame	0
@@ -22,13 +20,13 @@ main();
 // valvePosition	0
 // hwcPump
 
-function drawChart(temps) {
+function drawChart(data) {
 
   //  temps.forEach(d=>
   //    d.date = d3.isoParse(d.date)
   //  );
 
-  temps.forEach(p =>
+  data.forEach(p =>
     p.power = (p.power / 100)
   )
 
@@ -55,7 +53,7 @@ function drawChart(temps) {
   // Add X axis
   var x = d3
     .scaleLinear()
-    .domain(d3.extent(temps, (d) => d.id))
+    .domain(d3.extent(data, (d) => d.id))
     .range([0, width]);
 
   svg
@@ -104,12 +102,12 @@ function drawChart(temps) {
   //   .attr("text-anchor", "left")
   //   .attr("alignment-baseline", "middle");
 
-  const hwcMin = d3.min(temps, (d) => +d.waterpressure);
-  const hwcMax = d3.max(temps, (d) => +d.waterpressure);
+  const hwcMin = d3.min(data, (d) => +d.waterpressure);
+  const hwcMax = d3.max(data, (d) => +d.waterpressure);
   console.log("min:", hwcMin, ", max: ", hwcMax);
 
-  const Min2 = d3.min(temps, (d) => +d.power);
-  const Max2 = d3.max(temps, (d) => +d.power);
+  const Min2 = d3.min(data, (d) => +d.power);
+  const Max2 = d3.max(data, (d) => +d.power);
   console.log("min:", Min2, ", max: ", Max2);
 
   //  Set the gradient
@@ -138,7 +136,7 @@ function drawChart(temps) {
   //flame
   svg
     .append("path")
-    .datum(temps)
+    .datum(data)
     .attr("fill", "none")
     .attr("stroke", colorFlame)
     .attr("stroke-width", 2.5)
@@ -153,7 +151,7 @@ function drawChart(temps) {
   // power
   svg
     .append("path")
-    .datum(temps)
+    .datum(data)
     .attr("fill", "none")
     .attr("stroke", colorPower)
     .attr("stroke-width", 2.5)
@@ -168,7 +166,7 @@ function drawChart(temps) {
   // Water pressure
   svg
     .append("path")
-    .datum(temps)
+    .datum(data)
     .attr("fill", "none")
     .attr("stroke", colorPress)
     .attr("stroke-width", 2.5)

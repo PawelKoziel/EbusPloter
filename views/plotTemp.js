@@ -1,7 +1,8 @@
-import { getTempData } from './getData.js'
+import { getData } from './getData.js'
+
 
 function main() {
-  getTempData('temps')
+  getData('temps')
     .then(
       data => {
         drawChart(data);
@@ -10,7 +11,6 @@ function main() {
       error => console.log(error)
     )
 }
-
 main();
 
 
@@ -27,12 +27,12 @@ main();
 
 function drawChart(temps) {
 
-   temps.forEach(d=>
-     d.date = d3.isoParse(d.date)
-   );
+  temps.forEach(d =>
+    d.date = d3.isoParse(d.date)
+  );
 
-  const colorIndoor = "#33cc66";
-  const colorOutdoor = "#da7c20";
+  const colorIndoor = "#da7c20";
+  const colorOutdoor = "#33cc66";
   const colorHwc = "blueviolet";
 
   // set the dimensions and margins of the graph
@@ -61,8 +61,8 @@ function drawChart(temps) {
     .append("g")
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x)
-          //.tickFormat(d3.timeFormat('%Y-%m-%d / %H:%m')));
-          .tickFormat(d3.timeFormat('%d-%b / %H:%m')));
+      //.tickFormat(d3.timeFormat('%Y-%m-%d / %H:%m')));
+      .tickFormat(d3.timeFormat('%d-%b / %H:%m')));
 
   // Add Y axis
   var y = d3
@@ -75,18 +75,16 @@ function drawChart(temps) {
   svg.append("g").call(d3.axisLeft(y));
 
   svg
-  .append("text")
-  .attr("x", `-${height / 2}`)
-  .attr("dy", "-2em")
-  .attr("transform", "rotate(-90)")
-  .text("temperatura [C]");
-svg
-  .append("text")
-  .attr("x", `${width -30}`)
-  .attr("y", `${height + 20}`)
-  .text("data / godz");
-
-
+    .append("text")
+    .attr("x", `-${height / 2}`)
+    .attr("dy", "-2em")
+    .attr("transform", "rotate(-90)")
+    .text("temperatura [C]");
+  svg
+    .append("text")
+    .attr("x", `${width - 30}`)
+    .attr("y", `${height + 20}`)
+    .text("data / godz");
 
   // Create the circle that travels along the curve of chart
   var focus = svg
@@ -109,7 +107,7 @@ svg
   const hwcMax = d3.max(temps, (d) => +d.hwcWater);
   console.log("min:", hwcMin, ", max: ", hwcMax);
 
-//  Set the gradient
+  //  Set the gradient
   svg
     .append("linearGradient")
     .attr("id", "line-gradient")
@@ -132,7 +130,7 @@ svg
       return d.color;
     });
 
-  // Add the line
+  // INDOOR
   svg
     .append("path")
     .datum(temps)
@@ -144,10 +142,10 @@ svg
       d3
         .line()
         .x((d) => x(d.date))
-        .y((d) => y(d.outdoor))
+        .y((d) => y(d.indoor))
     );
 
-  // // indoor
+  // OUTDOOR
   svg
     .append("path")
     .datum(temps)
@@ -159,10 +157,10 @@ svg
       d3
         .line()
         .x((d) => x(d.date))
-        .y((d) => y(d.flame))
+        .y((d) => y(d.outdoor))
     );
 
-  //hwc Water
+  // hwc Water
   svg
     .append("path")
     .datum(temps)

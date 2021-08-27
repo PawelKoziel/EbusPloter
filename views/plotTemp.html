@@ -6,13 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="d3.v4.js"></script>
-    <link rel="stylesheet" href="plotStyle.css">
+    <link rel="stylesheet" href="plotStyle.css" />
   </head>
   <body>
-    <h1>Vaillant temperatures</h1>
-    <div class="tempPlot">
-      <div id="my_dataviz"></div>
-    </div>
-    <script src="plotData.js" type="module"></script>
+    <ul>
+      <li>
+          <h2>Temperatury</h2>
+          <div class="plot-box">
+            <div class="plot" id="plot-temp"></div>
+            <script src="plotTemp.js" type="module"></script>
+          </div>
+
+      </li>
+      <li>
+
+          <h2>Parametry kotła</h2>
+          <div class="plot-box">
+            <div class="plot" id="plot-parms"></div>
+            <script src="plotParms.js" type="module"></script>
+          </div>
+
+      </li>
+    </ul>
   </body>
 </html>

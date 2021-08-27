@@ -1,7 +1,17 @@
-.tempPlot {
-    vertical-align: middle;
-    border: 1px solid black;
+.container {
+    position: relative;
+    margin: 20px;
     align-content: center;
+  }
+
+.plot-box {
+    position: relative;
+    border: 1px solid black;
     width: 1220px;
     height: 730px;
+}
+
+.plot{
+    width: 1200px;
+    height: 700px;
 }

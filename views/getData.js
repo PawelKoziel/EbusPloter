@@ -1,8 +1,8 @@
-const apiPath = 'http://localhost:3001/api/temps'
+const apiRoot = 'http://localhost:3001/api/'
 
-export function getTempData(){
+export function getTempData(path){
     return new Promise(function (resolve, reject) {
-        d3.json(apiPath, function (err, data) {
+        d3.json(apiRoot + path, function (err, data) {
           if (err) {
             reject(error);
           } else {
@@ -13,8 +13,15 @@ export function getTempData(){
 }
 
 
+export function getParmData(path){
+  return new Promise(function (resolve, reject) {
+      d3.json(apiRoot + path, function (err, data) {
+        if (err) {
+          reject(error);
+        } else {
+          resolve(data)
+        }
+      });
+    });
+}
 
-
-
-
-  

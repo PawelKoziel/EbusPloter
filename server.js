@@ -7,9 +7,10 @@ const path = require("path");
 
 
 app.engine(".html", require("ejs").__express);
-app.set("views", path.join(__dirname, "views"));
+app.set("views", [path.join(__dirname, "views")]);//, path.join(__dirname, "panZoom")]);
 app.set("view engine", "html");
 app.use(express.static("views"));
+//app.use(express.static("panZoom"));
 
 // Start server
 app.listen(settings.port, () => {
@@ -38,11 +39,36 @@ app.get("/api/temps", (req, res) => {
 });
 
 
+app.get("/api/parms", (req, res) => {
+  var sql = "select * from params";
+
+  let db = new sqlite3.Database(path.resolve("vaillant.db"), (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log("Connected to the Vaillant database.");
+  });
+  db.all(sql, (err, row) => {
+    res.json(row);
+  });
+  db.close((err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log("Close the database connection.");
+  });
+});
+
+
+
 app.get("/", function (req, res) {
   res.render("plotTemp");
 });
 
 
+// app.get("/a", function (req, res) {
+//   res.render("index");
+// });
 
 
 // app.get("/d3test", function (req, res) {

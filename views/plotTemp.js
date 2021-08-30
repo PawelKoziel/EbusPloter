@@ -52,24 +52,27 @@ function drawChart(temps) {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Add X axis
-  var x = d3
+  var xScale = d3
     .scaleTime()
     .domain(d3.extent(temps, (d) => d.date))
     .range([0, width]);
 
-  chart
-    .append("g")
+  var yAxis = d3.axisBottom()
+    .scale(xScale)
+    .tickFormat(d3.timeFormat('%d-%b / %H:%m'));
+
+  chart.append("g")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x)
-      .tickFormat(d3.timeFormat('%d-%b / %H:%m')));
+    .call(xScale);
+
 
   // Add Y axis
   var yScale = d3
     .scaleLinear()
     .domain([d3.min(temps, (d) => Math.min(d.outdoor, d.indoor, d.hwcWater)) - 2
-           , d3.max(temps, (d) => Math.max(d.outdoor, d.indoor, d.hwcWater)) + 2])
+            ,d3.max(temps, (d) => Math.max(d.outdoor, d.indoor, d.hwcWater)) + 2])
     .range([height, 0]);
- 
+
   var yAxis = d3.axisLeft()
     .scale(yScale)
     .ticks(8)
@@ -90,7 +93,7 @@ function drawChart(temps) {
   chart
     .append("text")
     .attr("x", `${width - 50}`)
-    .attr("y", `${height -10}`)
+    .attr("y", `${height - 10}`)
     .text("data / godz");
 
   // Legenda
@@ -157,7 +160,7 @@ function drawChart(temps) {
       "d",
       d3
         .line()
-        .x((d) => x(d.date))
+        .x((d) => xScale(d.date))
         .y((d) => yScale(d.indoor))
     );
 
@@ -172,7 +175,7 @@ function drawChart(temps) {
       "d",
       d3
         .line()
-        .x((d) => x(d.date))
+        .x((d) => xScale(d.date))
         .y((d) => yScale(d.outdoor))
     );
 
@@ -187,7 +190,7 @@ function drawChart(temps) {
       "d",
       d3
         .line()
-        .x((d) => x(d.date))
+        .x((d) => xScale(d.date))
         .y((d) => yScale(d.hwcWater))
     );
 

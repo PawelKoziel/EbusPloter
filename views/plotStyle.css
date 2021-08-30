@@ -15,3 +15,41 @@
     width: 1200px;
     height: 700px;
 }
+
+
+/* ********************************************* */
+/* formatowanie wykresu */
+
+/* opis osi */
+/* svg {
+    font:10px sans-serif;
+} */
+
+path {
+    color: cadetblue;
+}
+
+.axis {
+    shape-rendering: crispEdges;
+} 
+
+/* napisy na osiach */
+/* .axis .tick {
+    stroke: rgb(88, 88, 88);
+    opacity: 0.7;
+} */
+
+.axis path { 
+    width: 2px;
+}
+
+/* poziome linie */
+.axis line {
+    stroke-dasharray: 2;   
+    stroke: lightgrey;
+}
+
+.y.axis line, .y.axis path {
+    fill: none;
+    stroke: lightgrey;
+}  

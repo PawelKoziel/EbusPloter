@@ -55,21 +55,37 @@ function drawChart(data) {
     .scaleLinear()
     .domain(d3.extent(data, (d) => d.id))
     .range([0, width]);
-
   svg
     .append("g")
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x));
 
-  // Add Y axis
-  var y = d3
+  // Y Scale
+  var yScale = d3
     .scaleLinear()
-    .domain([
-      0,
-      2//d3.max(temps, (d) => Math.max(d.waterpressure)),
-    ])
+    .domain([0, 2])
     .range([height, 0]);
-  svg.append("g").call(d3.axisLeft(y));
+  //  Y Axis
+  var yAxis = d3.axisLeft()
+      .scale(yScale)
+      .ticks(8)
+      .tickSize(-width);
+
+  svg.append("g")
+    .classed('y', true) 
+    .classed('axis', true) 
+    .call(yAxis);
+
+
+  // var yAxisGrid = yAxis.ticks(6)
+  //   .tickSize(0,width)
+  //   .tickFormat("");
+
+  // svg.append("g")
+  //   .classed('y', true)
+  //   .classed('grid', true)
+  //   .call(yAxisGrid);
+
 
   //   svg
   //   .append("text")
@@ -145,7 +161,7 @@ function drawChart(data) {
       d3
         .line()
         .x((d) => x(d.id))
-        .y((d) => y(d.flame))
+        .y((d) => yScale(d.flame))
     );
 
   // power
@@ -160,7 +176,7 @@ function drawChart(data) {
       d3
         .line()
         .x((d) => x(d.id))
-        .y((d) => y(d.power))
+        .y((d) => yScale(d.power))
     );
 
   // Water pressure
@@ -175,7 +191,7 @@ function drawChart(data) {
       d3
         .line()
         .x((d) => x(d.id))
-        .y((d) => y(d.waterpressure))
+        .y((d) => yScale(d.waterpressure))
     );
 
   // Legend
@@ -185,6 +201,8 @@ function drawChart(data) {
   svg.append("text").attr("x", width - 90).attr("y", 25).text("pressure").style("font-size", "15px").attr("alignment-baseline", "middle")
   svg.append("text").attr("x", width - 90).attr("y", 45).text("power").style("font-size", "15px").attr("alignment-baseline", "middle")
   svg.append("text").attr("x", width - 90).attr("y", 65).text("flame").style("font-size", "15px").attr("alignment-baseline", "middle")
+
+
 
 
 

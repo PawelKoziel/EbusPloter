@@ -11,7 +11,9 @@ function main() {
       error => console.log(error)
     )
 }
+
 main();
+
 
 
 //d3.time.format.iso
@@ -41,7 +43,7 @@ function drawChart(temps) {
   var height = 700 - margin.top - margin.bottom;
 
   // append the svg object to the body of the page
-  var svg = d3
+  var chart = d3
     .select("#plot-temp")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -49,45 +51,58 @@ function drawChart(temps) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-
   // Add X axis
   var x = d3
     .scaleTime()
     .domain(d3.extent(temps, (d) => d.date))
     .range([0, width]);
 
-  svg
+  chart
     .append("g")
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x)
-      //.tickFormat(d3.timeFormat('%Y-%m-%d / %H:%m')));
       .tickFormat(d3.timeFormat('%d-%b / %H:%m')));
 
   // Add Y axis
-  var y = d3
+  var yScale = d3
     .scaleLinear()
-    .domain([
-      0,
-      d3.max(temps, (d) => Math.max(d.outdoor, d.indoor, d.hwcWater)) + 2,
-    ])
+    .domain([d3.min(temps, (d) => Math.min(d.outdoor, d.indoor, d.hwcWater)) - 2
+           , d3.max(temps, (d) => Math.max(d.outdoor, d.indoor, d.hwcWater)) + 2])
     .range([height, 0]);
-  svg.append("g").call(d3.axisLeft(y));
+ 
+  var yAxis = d3.axisLeft()
+    .scale(yScale)
+    .ticks(8)
+    .tickSize(-width);
 
-  svg
+  chart.append("g")
+    .classed('y', true)
+    .classed('axis', true)
+    .call(yAxis);
+
+  //Additional Axis info
+  chart
     .append("text")
     .attr("x", `-${height / 2}`)
     .attr("dy", "-2em")
     .attr("transform", "rotate(-90)")
     .text("temperatura [C]");
-  svg
+  chart
     .append("text")
-    .attr("x", `${width - 30}`)
-    .attr("y", `${height + 20}`)
+    .attr("x", `${width - 50}`)
+    .attr("y", `${height -10}`)
     .text("data / godz");
 
+  // Legenda
+  chart.append("circle").attr("cx", width - 100).attr("cy", 10).attr("r", 6).style("fill", colorHwc)
+  chart.append("circle").attr("cx", width - 100).attr("cy", 30).attr("r", 6).style("fill", colorOutdoor)
+  chart.append("circle").attr("cx", width - 100).attr("cy", 50).attr("r", 6).style("fill", colorIndoor)
+  chart.append("text").attr("x", width - 90).attr("y", 15).text("cwu").style("font-size", "12px").attr("alignment-baseline", "middle")
+  chart.append("text").attr("x", width - 90).attr("y", 35).text("zewnątrz").style("font-size", "12px").attr("alignment-baseline", "middle")
+  chart.append("text").attr("x", width - 90).attr("y", 55).text("dom").style("font-size", "12px").attr("alignment-baseline", "middle")
+
   // Create the circle that travels along the curve of chart
-  var focus = svg
+  var focus = chart
     .append("g")
     .append("circle")
     .style("fill", "none")
@@ -96,7 +111,7 @@ function drawChart(temps) {
     .style("opacity", 0);
 
   // Create the text that travels along the curve of chart
-  var focusText = svg
+  var focusText = chart
     .append("g")
     .append("text")
     .style("opacity", 0)
@@ -108,14 +123,14 @@ function drawChart(temps) {
   console.log("min:", hwcMin, ", max: ", hwcMax);
 
   //  Set the gradient
-  svg
+  chart
     .append("linearGradient")
     .attr("id", "line-gradient")
     .attr("gradientUnits", "userSpaceOnUse")
     .attr("x1", 0)
-    .attr("y1", y(hwcMin))
+    .attr("y1", yScale(hwcMin))
     .attr("x2", 0)
-    .attr("y2", y(hwcMax))
+    .attr("y2", yScale(hwcMax))
     .selectAll("stop")
     .data([
       { offset: "0%", color: "blue" },
@@ -130,8 +145,9 @@ function drawChart(temps) {
       return d.color;
     });
 
+
   // INDOOR
-  svg
+  chart
     .append("path")
     .datum(temps)
     .attr("fill", "none")
@@ -142,11 +158,11 @@ function drawChart(temps) {
       d3
         .line()
         .x((d) => x(d.date))
-        .y((d) => y(d.indoor))
+        .y((d) => yScale(d.indoor))
     );
 
   // OUTDOOR
-  svg
+  chart
     .append("path")
     .datum(temps)
     .attr("fill", "none")
@@ -157,11 +173,11 @@ function drawChart(temps) {
       d3
         .line()
         .x((d) => x(d.date))
-        .y((d) => y(d.outdoor))
+        .y((d) => yScale(d.outdoor))
     );
 
   // hwc Water
-  svg
+  chart
     .append("path")
     .datum(temps)
     .attr("fill", "none")
@@ -172,16 +188,9 @@ function drawChart(temps) {
       d3
         .line()
         .x((d) => x(d.date))
-        .y((d) => y(d.hwcWater))
+        .y((d) => yScale(d.hwcWater))
     );
 
-  // Legend
-  svg.append("circle").attr("cx", width - 100).attr("cy", 20).attr("r", 6).style("fill", colorHwc)
-  svg.append("circle").attr("cx", width - 100).attr("cy", 40).attr("r", 6).style("fill", colorOutdoor)
-  svg.append("circle").attr("cx", width - 100).attr("cy", 60).attr("r", 6).style("fill", colorIndoor)
-  svg.append("text").attr("x", width - 90).attr("y", 25).text("cwu").style("font-size", "15px").attr("alignment-baseline", "middle")
-  svg.append("text").attr("x", width - 90).attr("y", 45).text("zewnątrz").style("font-size", "15px").attr("alignment-baseline", "middle")
-  svg.append("text").attr("x", width - 90).attr("y", 65).text("dom").style("font-size", "15px").attr("alignment-baseline", "middle")
 
 
 

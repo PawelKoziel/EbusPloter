@@ -1,7 +1,8 @@
 // Create express app
 var express = require("express");
 var app = express();
-var settings = require("./package.json");
+const cors = require('cors');
+var config = require("./config.json");
 var sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 const dbPath = 'vaillant.db';
@@ -11,18 +12,21 @@ app.set("views", [path.join(__dirname, "views")]);//, path.join(__dirname, "panZ
 app.set("view engine", "html");
 app.use(express.static("views"));
 
-const ip = settings.interface;
-const port = settings.port;
+app.use(cors())
+
+
+const ip = config.interface;
+const port = config.port;
 
 var apiAddress = `http://${ip}:${port}`
 
 // Start server
-app.listen(port, ip,
+app.listen(port, config.interface, 
   () => console.log(apiAddress));
 
-// www  
+// main www  
 app.get("/", function (req, res) {
-  res.render("plotTemp");
+  res.render("plotTemp", {json: "ddddddddd"});
 });
 
 // temp API
@@ -34,6 +38,12 @@ app.get("/api/temps", (req, res) => {
 // param API
 app.get("/api/parms", (req, res) => {
   var sql = "select * from params";
+  getDbData(sql, req, res);
+});
+
+// energy API
+app.get("/api/energy", (req, res) => {
+  var sql = "select * from energy";
   getDbData(sql, req, res);
 });
 

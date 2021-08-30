@@ -1,5 +1,7 @@
-//const apiRoot = `http://${settings.interface}:${settings.port}/api/`
-const apiRoot = 'http://localhost:3001/api/'
+//var config = require("../config.json");
+
+//const apiRoot = `http://${config.interface}:${config.port}/api/`
+const apiRoot = 'http://127.0.0.1:3001/api/'
 
 
 export function getData(path){

@@ -22,14 +22,16 @@ main();
 
 function drawChart(data) {
 
-  //  temps.forEach(d=>
-  //    d.date = d3.isoParse(d.date)
-  //  );
+    data.forEach(d=>
+      d.date = d3.isoParse(d.date)
+    );
 
   const colorHcSum = "#cc6262";
-  const colorHcCnt = "#d50f0f";
-  const colorHwcSum = "#5e9ace";
+  const colorHcCnt = "#5e9ace";
+  const colorHwcSum = "#d50f0f";
   const colorHwcCnt = "#0760ae";
+
+
 
   // set the dimensions and margins of the graph
   var margin = { top: 10, right: 30, bottom: 30, left: 60 }
@@ -45,56 +47,94 @@ function drawChart(data) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // Add X axis
-  var x = d3
+
+  // ------------------------------------------ X axis
+  var xScale = d3
     .scaleLinear()
     .domain(d3.extent(data, (d) => d.id))
     .range([0, width]);
 
-  svg
-    .append("g")
+  var xAxis = d3.axisBottom(xScale);
+
+  svg.append("g")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x));
+    .call(xAxis);
 
-  // Add Y axis
-  var ySum = d3
-    .scaleLinear()
-    .domain([     
-      d3.min(data, (d) => Math.min(d.hwcEnergySum)),
-      d3.max(data, (d) => Math.max(d.hwcEnergySum)),
-    ])
+  console.log("hcEnergySum", d3.extent(data, (d) => d.hcEnergySum));
+  console.log("hwcEnergySum", d3.extent(data, (d) => d.hwcEnergySum));
+  console.log("hcEnergyCnt", d3.extent(data, (d) => d.hcEnergyCnt));
+  console.log("hwcEnergyCnt:", d3.extent(data, (d) => d.hwcEnergyCnt));
+
+
+  // ------------------------------------------ Y axis
+
+  // y sum
+  var ySumScale = d3  //zdefiniowanie skali dla danych
+    .scaleLinear()       // typ skali
+    .domain(d3.extent(data, (d) => d.hwcEnergySum)) //zakres danych
+    .range([height, 0]); //wysokość na wykresie
+
+  var ySumAxis = d3.axisLeft()    // zdefiniowanie osi 
+    .scale(ySumScale)             // dołączenie skali
+    .tickFormat(d3.format(".3s")) // format naukowy 3-cyfrowy
+    .tickSize(-width - 20)        // długość kresek na osi
+    .ticks(5);                    // ilość kresek na osi
+
+  var ySymGraph = svg.append("g").call(ySumAxis)   //dodanie osi do wykresu
+    .attr("transform", "translate(-20,0)") //przesunięcie osi w poziomie
+    .selectAll("text").style("stroke", colorHcSum); // kolor napisów
+
+
+
+  // Y counters
+  var yCntScale = d3
+    .scaleSqrt()
+    .domain(d3.extent(data, (d) => d.hwcEnergyCnt))
     .range([height, 0]);
-  svg.append("g").call(d3.axisLeft(ySum));
 
-  var yCnt = d3
-    .scaleLinear()
-    .domain([
-      d3.min(data, (d) => Math.min(d.hwcEnergyCnt)),
-      d3.max(data, (d) => Math.max(d.hwcEnergyCnt)),
-    ])
-    .range([height, 0]);
-  svg.append("g").call(d3.axisLeft(yCnt)).attr("transform", "translate(-30,0)");
+  var yCntAxis = d3.axisRight()
+    .scale(yCntScale)
+    .tickFormat(d3.format(".3s")); // format naukowy z 3 cyframi
+
+  svg.append("g").call(yCntAxis)
+    .attr("transform", `translate(${width},0)`)
+    .selectAll("text").style("stroke", colorHcCnt);
+
+  //kreskowane ticks
+  svg.selectAll("line")
+    .style("stroke", "grey")
+    .style("stroke-dasharray", "4,4")
 
 
-  console.log(` Math.max(d.hcEnergyCnt): ${Math.min(data.map(o=>o.hcEnergySum))}`)
-  console.log(` Math.max(d.hcEnergyCnt): ${Math.max(data.map(o=>o.hcEnergySum))}`)
-  console.log(` Math.max(d.hcEnergyCnt): ${Math.max(data.map(o=>o.hcEnergyCnt))}`)
 
- 
+  // // hcEnergySum
+  // svg
+  //   .append("path")
+  //   .datum(data)
+  //   .attr("fill", "none")
+  //   .attr("stroke", colorHcSum)
+  //   .attr("stroke-width", 2.5)
+  //   .attr(
+  //     "d",
+  //     d3
+  //       .line()
+  //       .x((d) => xScale(d.id))
+  //       .y((d) => ySumScale(d.hcEnergySum))
+  //   );
 
-  // hcEnergySum
+  // hwcEnergySum
   svg
     .append("path")
     .datum(data)
     .attr("fill", "none")
-    .attr("stroke", colorHcSum)
+    .attr("stroke", colorHwcSum)
     .attr("stroke-width", 2.5)
     .attr(
       "d",
       d3
         .line()
-        .x((d) => x(d.id))
-        .y((d) => ySum(d.hcEnergySum))
+        .x((d) => xScale(d.id))
+        .y((d) => ySumScale(d.hwcEnergySum))
     );
 
   // hcEnergyCnt
@@ -108,22 +148,8 @@ function drawChart(data) {
       "d",
       d3
         .line()
-        .x((d) => x(d.id))
-        .y((d) => yCnt(d.hcEnergyCnt))
-    );
-  // hwcEnergySum
-  svg
-    .append("path")
-    .datum(data)
-    .attr("fill", "none")
-    .attr("stroke", colorHwcSum)
-    .attr("stroke-width", 2.5)
-    .attr(
-      "d",
-      d3
-        .line()
-        .x((d) => x(d.id))
-        .y((d) => ySum(d.hwcEnergySum))
+        .x((d) => xScale(d.id))
+        .y((d) => yCntScale(d.hcEnergyCnt))
     );
 
   // hwcEnergyCnt
@@ -137,22 +163,23 @@ function drawChart(data) {
       "d",
       d3
         .line()
-        .x((d) => x(d.id))
-        .y((d) => yCnt(d.hwcEnergyCnt))
+        .x((d) => xScale(d.id))
+        .y((d) => yCntScale(d.hwcEnergyCnt))
     );
 
 
-  // Legend
-  svg.append("circle").attr("cx", width - 100).attr("cy", 20).attr("r", 6).style("fill", colorHcSum)
-  svg.append("circle").attr("cx", width - 100).attr("cy", 40).attr("r", 6).style("fill", colorHcCnt)
-  svg.append("circle").attr("cx", width - 100).attr("cy", 60).attr("r", 6).style("fill", colorHwcSum)
-  svg.append("circle").attr("cx", width - 100).attr("cy", 80).attr("r", 6).style("fill", colorHwcCnt)
-  svg.append("text").attr("x", width - 90).attr("y", 25).text("hcEnergyCnt").style("font-size", "15px").attr("alignment-baseline", "middle")
-  svg.append("text").attr("x", width - 90).attr("y", 45).text("hcEnergySum").style("font-size", "15px").attr("alignment-baseline", "middle")
-  svg.append("text").attr("x", width - 90).attr("y", 65).text("hwcEnergyCnt").style("font-size", "15px").attr("alignment-baseline", "middle")
-  svg.append("text").attr("x", width - 90).attr("y", 85).text("hwcEnergySum").style("font-size", "15px").attr("alignment-baseline", "middle")
 
-//Draw a grid
+  // Legend
+  svg.append("circle").attr("cx", 0).attr("cy", 20).attr("r", 6).style("fill", colorHcSum)
+  svg.append("circle").attr("cx", 0).attr("cy", 40).attr("r", 6).style("fill", colorHcCnt)
+  svg.append("circle").attr("cx", 0).attr("cy", 60).attr("r", 6).style("fill", colorHwcSum)
+  svg.append("circle").attr("cx", 0).attr("cy", 80).attr("r", 6).style("fill", colorHwcCnt)
+  svg.append("text").attr("x", 10).attr("y", 25).text("hcEnergyCnt").style("font-size", "15px").attr("alignment-baseline", "middle")
+  svg.append("text").attr("x", 10).attr("y", 45).text("hcEnergySum").style("font-size", "15px").attr("alignment-baseline", "middle")
+  svg.append("text").attr("x", 10).attr("y", 65).text("hwcEnergyCnt").style("font-size", "15px").attr("alignment-baseline", "middle")
+  svg.append("text").attr("x", 10).attr("y", 85).text("hwcEnergySum").style("font-size", "15px").attr("alignment-baseline", "middle")
+
+  //Draw a grid
 
 
   // Create a rect on top of the svg area: this rectangle recovers mouse position
@@ -195,6 +222,5 @@ function drawChart(data) {
   //   focusText.style("opacity", 0);
   // }
 }
-
 
 

@@ -6,12 +6,13 @@ var config = require("./config.json");
 var sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 const dbPath = 'vaillant.db';
+const { DateTime } = require("luxon");
 
 app.engine(".html", require("ejs").__express);
 app.set("views", [path.join(__dirname, "views")]);//, path.join(__dirname, "panZoom")]);
 app.set("view engine", "html");
 app.use(express.static("views"));
-
+app.use('/favicon.ico', express.static('favicon.ico'));
 app.use(cors())
 
 

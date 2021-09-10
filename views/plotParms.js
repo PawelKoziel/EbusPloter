@@ -63,7 +63,7 @@ function drawChart(data) {
   // Y Scale
   var yScale = d3
     .scaleLinear()
-    .domain([0, 2])
+    .domain([-0.2, 2])
     .range([height, 0]);
   //  Y Axis
   var yAxis = d3.axisLeft()

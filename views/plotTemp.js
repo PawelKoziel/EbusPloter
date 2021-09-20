@@ -1,14 +1,10 @@
 import { getData } from './getData.js'
 
 function main() {
-  getData('temps')
-    .then(
-      data => {
-        drawChart(data);
-      })
-    .catch(
-      error => console.log(error)
-    )
+  d3.json('http://127.0.0.1:3001/api/temps')
+    //getData('temps')
+    .then(data => drawChart(data))
+    .catch(error => console.log(error))
 }
 
 main();
@@ -29,57 +25,44 @@ function drawChart(temps) {
   const colorHwc = "blueviolet";
 
   // total chart size
-  var plotSize = { width: 1200, height: 700}
-  
+  var totalSize = { width: 1200, height: 700 }
+
   // set the dimensions and margins of the graph
-  var margin = { top: 10, right: 0, bottom: 70, left: 30 }
-  
+  var margin = { top: 10, right: 0, bottom: 60, left: 30 }
+
   //plot drawing size
-  var drawSize = { 
-    width : plotSize.width - margin.left - margin.right,
-    height : plotSize.height - margin.bottom - margin.top
+  var drawSize = {
+    width: totalSize.width - margin.left - margin.right,
+    height: totalSize.height - margin.bottom - margin.top
   }
+
 
   // append the svg object to the body of the page
   var chart = d3
     .select("#plot-temp")
     .append("svg")
-    .attr("width", plotSize.width)
-    .attr("height", plotSize.height)
-    .attr("preserveAspectRatio","xMidYMin")
-    //.attr("style", "border:1px solid red")
-    .attr('viewbox', `0 0 ${plotSize.width} ${plotSize.height}`)
+    .attr("width", totalSize.width)
+    .attr("height", totalSize.height)
+    .attr('viewbox', `0 0 ${totalSize.width} ${totalSize.height}`)
     .append("g")
-
-  //prostokąt po to żeby zoom działał
-
-  var kwadrat = chart
-  .append("defs")
-  .append("clipPath")
-  .attr("id", "clip")
-
-  .attr("width", plotSize.width)
-  .attr("height", plotSize.height)
+  //.attr("style", "border:1px solid red")
+  //  .attr("preserveAspectRatio", "xMidYMin")
+  //.call(zoom)
 
 
-  var minDate = temps[temps.length-6*24*7].date
-  var maxDate = temps[temps.length-1].date
-  console.log("mindate", minDate);
-  console.log("maxdate", maxDate);
 
   // -------------------------------------- oś X ----------------------------
   // Add X scale
   var xScale = d3.scaleTime()
-    //.domain([d3.min(temps,d=>d.date), d3.max(temps,d=>d.date)])
-    //.domain(d3.extent(temps, (d) => d.date))
-    .domain([minDate,maxDate])
+    .domain(d3.extent(temps, d => d.date))
     .range([margin.left, drawSize.width])
+  //.domain([d3.min(temps,d=>d.date), d3.max(temps,d=>d.date)])
+  //.domain([minDate, maxDate])
 
   // Add X axis
   var xAxis = d3.axisBottom()
     .scale(xScale)
-    .tickFormat(d3.timeFormat('%d-%m'));
-    //.tickFormat(d3.timeFormat('%d-%m / %H:%M'));
+    .tickFormat(d3.timeFormat('%d-%m / %H:%M'));
 
   var gX = chart.append("g")
     .attr("transform", `translate(0,${drawSize.height})`)
@@ -92,12 +75,12 @@ function drawChart(temps) {
     .attr("transform", "rotate(-75)");
 
 
-
   // -------------------------------------- oś Y ----------------------------
   // Add Y scale
   var yScale = d3
     .scaleLinear()
-    .domain(d3.extent(temps, (d) => d.outdoor))
+    .domain([d3.min(temps, d => d.outdoor), d3.max(temps, d => d.hwcWater)])
+    //.domain(d3.extent(temps, (d) => d.hwcWater))
     .range([drawSize.height, margin.top])
     .nice()
 
@@ -117,6 +100,18 @@ function drawChart(temps) {
   // -------------------------------------- linie ----------------------------
 
 
+  // HWC
+  var hwc = chart
+    .append("path")
+    .datum(temps)
+    .attr("fill", "none")
+    .attr("stroke", colorHwc)
+    //.attr("stroke-width", 2.5)
+    .attr("d",
+      d3.line()
+        .x(d => xScale(d.date))
+        .y(d => yScale(d.hwcWater))
+    );
 
   // INDOOR
   var indoor = chart
@@ -125,61 +120,79 @@ function drawChart(temps) {
     .attr("fill", "none")
     .attr("stroke", colorIndoor)
     //.attr("stroke-width", 2.5)
-    .attr(
-      "d",
+    .attr("d",
+      d3.line()
+        .x(d => xScale(d.date))
+        .y(d => yScale(d.indoor))
+    );
+
+
+  // OUTDOOR
+  var outdoor = chart
+    .append("path")
+    .datum(temps)
+    .attr("fill", "none")
+    .attr("stroke", colorOutdoor)
+    //.attr("stroke-width", 2.5)
+    .attr("d",
       d3.line()
         .x(d => xScale(d.date))
         .y(d => yScale(d.outdoor))
     );
 
 
-  var zoom = d3.zoom()
-    .scaleExtent([0.5, 2]) 
+  // Legend
+  chart.append("circle").attr("cx", totalSize.width - 100).attr("cy", 20).attr("r", 6).style("fill", colorHwc)
+  chart.append("circle").attr("cx", totalSize.width - 100).attr("cy", 40).attr("r", 6).style("fill", colorIndoor)
+  chart.append("circle").attr("cx", totalSize.width - 100).attr("cy", 60).attr("r", 6).style("fill", colorOutdoor)
+  chart.append("text").attr("x", totalSize.width - 90).attr("y", 25).text("hwc").style("font-size", "15px").attr("alignment-baseline", "middle")
+  chart.append("text").attr("x", totalSize.width - 90).attr("y", 45).text("indoor").style("font-size", "15px").attr("alignment-baseline", "middle")
+  chart.append("text").attr("x", totalSize.width - 90).attr("y", 65).text("outdoor").style("font-size", "15px").attr("alignment-baseline", "middle")
+
+
+  // -------------------------------------- zoom ----------------------------
+
+  let zoom = d3.zoom()
+    .scaleExtent([0.5, 4]) //limity zoom
     .translateExtent([[0, 0], [drawSize.width, drawSize.height]])
-    .on("zoom", onZoom);
+    .extent([[0, 0], [drawSize.width, drawSize.height]]) //limity draw
+    .on("zoom", zoomed)
 
-  chart.call(zoom)
+  function zoomed(event) {
+    //pobranie aktualnej skali x
+    let xz = event.transform.rescaleX(xScale);
 
+    //zoom linii danych
+    indoor.attr("d", d3.line()
+      .x(d => xz(d.date))
+      .y(d => yScale(d.indoor)));
 
-  function onZoom() {
-    console.log("onZoom");
-    var transform = d3.event.transform;
-    var new_xScale = transform.rescaleX(xScale)
-    var transformString = 'translate(' + transform.x + ',' + '0) scale(' + transform.k + ',1)';
-    console.log("Transform", transformString)
-    indoor.attr("x", d => new_xScale(d.date));
-    indoor.call(xAxis.scale(new_xScale))
-    indoor.attr("transform", transformString)
-    xAxis.scale(new_xScale);
-    gX.call(xAxis);
+    outdoor.attr("d", d3.line()
+      .x(d => xz(d.date))
+      .y(d => yScale(d.outdoor)));
 
+    hwc.attr("d", d3.line()
+      .x(d => xz(d.date))
+      .y(d => yScale(d.hwcWater)));
 
+    //zoom osi x  
+    gX.call(xAxis.scale(xz));
+
+    // obrót tekstu osi
     gX.selectAll("text")
-    .style("text-anchor", "end")
-    .attr("dx", "-.8em")
-    .attr("dy", ".15em")
-    .attr("transform", "rotate(-75)");
-  }
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-75)");
+  };
 
-
-
-
-
-  function onZoomols() {
-
-    console.log("onZoom")
-
-
-    const t = d3.event.transform,
-      // rescale the x linear scale so that we can draw the top axis
-      xt = t.rescaleX(xScale);
-
-    chart.call(xAxis.scale(xt))
-
-
-
-  }
-
-
+  //prostokąt po to żeby zoom działał na całym obszarze 
+  chart.append("rect")
+    .attr("width", drawSize.width)
+    .attr("height", drawSize.height)
+    .style("fill", "none")
+    .style("pointer-events", "all")
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+    .call(zoom);
 
 }

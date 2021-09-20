@@ -2,7 +2,6 @@ import { getData } from './getData.js'
 
 function main() {
   d3.json('http://127.0.0.1:3001/api/energy')
-    //getData('energy')
     .then(data => drawChart(data))
     .catch(error => console.log(error))
 }

@@ -1,14 +1,9 @@
 import { getData } from './getData.js'
 
 function main() {
-  getData('parms')
-    .then(
-      data => {
-        drawChart(data);
-      })
-    .catch(
-      error => console.log(error)
-    )
+  d3.json('http://127.0.0.1:3001/api/parms')
+    .then(data => drawChart(data))
+    .catch(error => console.log(error))
 }
 main();
 
@@ -22,83 +17,79 @@ main();
 
 function drawChart(data) {
 
-  //  temps.forEach(d=>
-  //    d.date = d3.isoParse(d.date)
-  //  );
+  data.forEach(d => {
+    //d.date = d3.isoParse(d.date);
+    d.power = (d.power / 100)
+  });
 
-  data.forEach(p =>
-    p.power = (p.power / 100)
-  )
 
   const colorFlame = "black";
   const colorPower = "#e02e2e";
   const colorPress = "#30b0d9";
 
+  // total chart size
+  var totalSize = { width: 1200, height: 700 }
+
   // set the dimensions and margins of the graph
-  var margin = { top: 10, right: 30, bottom: 30, left: 60 }
-  var width = 1200 - margin.left - margin.right;
-  var height = 700 - margin.top - margin.bottom;
+  var margin = { top: 10, right: 0, bottom: 30, left: 30 }
+
+  //plot drawing size
+  var drawSize = {
+    width: totalSize.width - margin.left - margin.right,
+    height: totalSize.height - margin.bottom - margin.top
+  }
+
 
   // append the svg object to the body of the page
-  var svg = d3
+  var chart = d3
     .select("#plot-parms")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", totalSize.width)
+    .attr("height", totalSize.height)
+    .attr('viewbox', `0 0 ${totalSize.width} ${totalSize.height}`)
     .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
+  // -------------------------------------- oś X ----------------------------
+  // Add X scale
+  var xScale = d3.scaleLinear()
+    .domain(d3.extent(data, d => d.id))
+    .range([margin.left, drawSize.width]);
 
   // Add X axis
-  var x = d3
-    .scaleLinear()
-    .domain(d3.extent(data, (d) => d.id))
-    .range([0, width]);
-  svg
-    .append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x));
+  var xAxis = d3.axisBottom()
+    .scale(xScale);
+    //.tickFormat(d3.timeFormat('%d-%m / %H:%M'));
 
-  // Y Scale
-  var yScale = d3
-    .scaleLinear()
-    .domain([0, 2])
-    .range([height, 0]);
+  var gX = chart.append("g")
+    .attr("transform", `translate(0,${drawSize.height})`)
+    .call(xAxis);
+
+  gX.selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", ".15em")
+    .attr("transform", "rotate(-75)");
+
+
+
+  // -------------------------------------- oś Y ----------------------------
+  // Add Y scale
+  var yScale = d3.scaleLinear()
+    .domain([-0.2, 2])
+    .range([drawSize.height, margin.top])
+
   //  Y Axis
   var yAxis = d3.axisLeft()
-      .scale(yScale)
-      .ticks(8)
-      .tickSize(-width);
+    .scale(yScale)
+    .ticks(10)
+    .tickSize(-drawSize.width);
 
-  svg.append("g")
-    .classed('y', true) 
-    .classed('axis', true) 
+  chart.append("g")
+    .classed('y', true)
+    .classed('axis', true)
+    .attr("transform", `translate(${margin.left},0)`)
     .call(yAxis);
-
-
-  // var yAxisGrid = yAxis.ticks(6)
-  //   .tickSize(0,width)
-  //   .tickFormat("");
-
-  // svg.append("g")
-  //   .classed('y', true)
-  //   .classed('grid', true)
-  //   .call(yAxisGrid);
-
-
-  //   svg
-  //   .append("text")
-  //   .attr("x", `-${height / 2}`)
-  //   .attr("dy", "-2em")
-  //   .attr("transform", "rotate(-90)")
-  //   .text("temperatura [C]");
-  // svg
-  //   .append("text")
-  //   .attr("x", `${width -30}`)
-  //   .attr("y", `${height + 20}`)
-  //   .text("data / godz");
-
 
 
   // // Create the circle that travels along the curve of chart
@@ -118,133 +109,97 @@ function drawChart(data) {
   //   .attr("text-anchor", "left")
   //   .attr("alignment-baseline", "middle");
 
-  const hwcMin = d3.min(data, (d) => +d.waterpressure);
-  const hwcMax = d3.max(data, (d) => +d.waterpressure);
-  console.log("min:", hwcMin, ", max: ", hwcMax);
-
-  const Min2 = d3.min(data, (d) => +d.power);
-  const Max2 = d3.max(data, (d) => +d.power);
-  console.log("min:", Min2, ", max: ", Max2);
-
-  //  Set the gradient
-  // svg
-  //   .append("linearGradient")
-  //   .attr("id", "line-gradient")
-  //   .attr("gradientUnits", "userSpaceOnUse")
-  //   .attr("x1", 0)
-  //   .attr("y1", y(hwcMin))
-  //   .attr("x2", 0)
-  //   .attr("y2", y(hwcMax))
-  //   .selectAll("stop")
-  //   .data([
-  //     { offset: "0%", color: "blue" },
-  //     { offset: "100%", color: "red" },
-  //   ])
-  //   .enter()
-  //   .append("stop")
-  //   .attr("offset", function (d) {
-  //     return d.offset;
-  //   })
-  //   .attr("stop-color", function (d) {
-  //     return d.color;
-  //   });
 
   //flame
-  svg
+  var flame = chart
     .append("path")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", colorFlame)
     .attr("stroke-width", 2.5)
-    .attr(
-      "d",
-      d3
-        .line()
-        .x((d) => x(d.id))
-        .y((d) => yScale(d.flame))
+    .attr("d", d3.line()
+      .x((d) => xScale(d.id))
+      .y((d) => yScale(d.flame))
     );
 
-  // power
-  svg
+  //power
+  var power = chart
     .append("path")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", colorPower)
     .attr("stroke-width", 2.5)
-    .attr(
-      "d",
-      d3
-        .line()
-        .x((d) => x(d.id))
-        .y((d) => yScale(d.power))
+    .attr("d", d3.line()
+      .x((d) => xScale(d.id))
+      .y((d) => yScale(d.power))
     );
 
   // Water pressure
-  svg
+  var pressure = chart
     .append("path")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", colorPress)
     .attr("stroke-width", 2.5)
-    .attr(
-      "d",
-      d3
-        .line()
-        .x((d) => x(d.id))
-        .y((d) => yScale(d.waterpressure))
+    .attr("d", d3.line()
+      .x((d) => xScale(d.id))
+      .y((d) => yScale(d.waterpressure))
     );
 
   // Legend
-  svg.append("circle").attr("cx", width - 100).attr("cy", 20).attr("r", 6).style("fill", colorPress)
-  svg.append("circle").attr("cx", width - 100).attr("cy", 40).attr("r", 6).style("fill", colorPower)
-  svg.append("circle").attr("cx", width - 100).attr("cy", 60).attr("r", 6).style("fill", colorFlame)
-  svg.append("text").attr("x", width - 90).attr("y", 25).text("pressure").style("font-size", "15px").attr("alignment-baseline", "middle")
-  svg.append("text").attr("x", width - 90).attr("y", 45).text("power").style("font-size", "15px").attr("alignment-baseline", "middle")
-  svg.append("text").attr("x", width - 90).attr("y", 65).text("flame").style("font-size", "15px").attr("alignment-baseline", "middle")
+  chart.append("circle").attr("cx", totalSize.width - 100).attr("cy", 20).attr("r", 6).style("fill", colorPress)
+  chart.append("circle").attr("cx", totalSize.width - 100).attr("cy", 40).attr("r", 6).style("fill", colorPower)
+  chart.append("circle").attr("cx", totalSize.width - 100).attr("cy", 60).attr("r", 6).style("fill", colorFlame)
+  chart.append("text").attr("x", totalSize.width - 90).attr("y", 25).text("pressure").style("font-size", "15px").attr("alignment-baseline", "middle")
+  chart.append("text").attr("x", totalSize.width - 90).attr("y", 45).text("power").style("font-size", "15px").attr("alignment-baseline", "middle")
+  chart.append("text").attr("x", totalSize.width - 90).attr("y", 65).text("flame").style("font-size", "15px").attr("alignment-baseline", "middle")
 
 
 
+  // -------------------------------------- zoom ----------------------------
+  let zoom = d3.zoom()
+    .scaleExtent([0.5, 4]) //limity zoom
+    .translateExtent([[0, 0], [drawSize.width, drawSize.height]])
+    .extent([[0, 0], [drawSize.width, drawSize.height]]) //limity draw
+    .on("zoom", zoomed)
 
+  function zoomed(event) {
+    //pobranie aktualnej skali x
+    let xz = event.transform.rescaleX(xScale);
 
-  // Create a rect on top of the svg area: this rectangle recovers mouse position
-  // svg
-  //   .append("rect")
-  //   .style("fill", "none")
-  //   .style("pointer-events", "all")
-  //   .attr("width", width)
-  //   .attr("height", height)
-  //   .on("mouseover", mouseover)
-  //   .on("mousemove", mousemove)
-  //   .on("mouseout", mouseout);
+    //zoom linii danych
+    flame.attr("d", d3.line()
+      .x(d => xz(d.id))
+      .y(d => yScale(d.flame)));
 
+    power.attr("d", d3.line()
+      .x(d => xz(d.id))
+      .y(d => yScale(d.power)));
 
-  // This allows to find the closest X index of the mouse:
-  // var bisect = d3.bisector(d => d.id).left;
+    pressure.attr("d", d3.line()
+      .x(d => xz(d.id))
+      .y(d => yScale(d.waterpressure)));
 
+    //zoom osi x  
+    gX.call(xAxis.scale(xz));
 
-  // // What happens when the mouse move -> show the annotations at the right positions.
-  // function mouseover() {
-  //   focus.style("opacity", 1);
-  //   focusText.style("opacity", 1);
-  // }
+    // obrót tekstu osi
+    gX.selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-75)");
+  };
 
-  // function mousemove() {
-  //   // recover coordinate we need
-  //   var x0 = x.invert(d3.mouse(this)[0]);
-  //   var i = bisect(temps, x0, 1);
-  //   let selectedData = temps[i];
-  //   focus.attr("cx", x(selectedData.id)).attr("cy", y(selectedData.hwcWater));
-  //   focusText
-  //     .html("id:" + selectedData.id + "  -  " + "temp:" + selectedData.hwcWater)
-  //     .html("temp:" + selectedData.hwcWater)
-  //     .attr("x", x(selectedData.id) + 15)
-  //     .attr("y", y(selectedData.hwcWater));
-  // }
+  //prostokąt po to żeby zoom działał na całym obszarze 
+  chart.append("rect")
+    .attr("width", drawSize.width)
+    .attr("height", drawSize.height)
+    .style("fill", "none")
+    .style("pointer-events", "all")
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+    .call(zoom);
 
-  // function mouseout() {
-  //   focus.style("opacity", 0);
-  //   focusText.style("opacity", 0);
-  // }
 }
 
 

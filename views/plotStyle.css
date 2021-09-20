@@ -1,20 +1,20 @@
-.container {
-    position: relative;
-    margin: 20px;
-    align-content: center;
-  }
-
 .plot-box {
     position: relative;
     border: 1px solid black;
     width: 1220px;
     height: 730px;
+    /* display: flex;
+    justify-content: center; */
 }
 
 .plot{
     width: 1200px;
     height: 700px;
+    margin: 10px
 }
+
+
+
 
 
 /* ********************************************* */

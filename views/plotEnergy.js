@@ -21,10 +21,10 @@ function drawChart(data) {
     d.date = d3.isoParse(d.date)
   );
 
-  const colorHcSum = "#cc6262";
-  const colorHcCnt = "#5e9ace";
-  const colorHwcSum = "#d50f0f";
-  const colorHwcCnt = "#0760ae";
+  const colorHc = "#cc6262";
+  //const colorHcCnt = "#5e9ace";
+  //const colorHwcSum = "#d50f0f";
+  const colorHwc = "#0760ae";
 
   // total chart size
   var totalSize = { width: 1200, height: 700 }
@@ -78,37 +78,38 @@ function drawChart(data) {
 
 
   // -------------------------------------- oś Y ----------------------------
-  // Add Y scale
-  var ySumScale = d3  //zdefiniowanie skali dla danych
+  // Add Y hc scale
+  var yHcScale = d3  //zdefiniowanie skali dla danych
     .scaleLinear()       // typ skali
-    .domain(d3.extent(data, (d) => d.hwcEnergySum)) //zakres danych
+    .domain(d3.extent(data, (d) => d.HcUsage)) //zakres danych
     .range([drawSize.height, margin.top])//wysokość na wykresie
     .nice()
-  var ySumAxis = d3.axisLeft()    // zdefiniowanie osi 
-    .scale(ySumScale)             // dołączenie skali
+  var yHcAxis = d3.axisLeft()    // zdefiniowanie osi 
+    .scale(yHcScale)             // dołączenie skali
     .tickFormat(d3.format(".3s")) // format naukowy 3-cyfrowy
     .tickSize(-drawSize.width - margin.left)        // długość kresek na osi
     .ticks(5);                    // ilość kresek na osi
 
-  chart.append("g").call(ySumAxis)   //dodanie osi do wykresu
+  chart.append("g").call(yHcAxis)   //dodanie osi do wykresu
     .attr("transform", `translate(${margin.right},0)`) //przesunięcie osi w poziomie
-    .selectAll("text").style("stroke", colorHcSum); // kolor napisów
+    .selectAll("text").style("stroke", colorHc); // kolor napisów
 
 
 
-  // Y counters
-  var yCntScale = d3
+  // Y hwc scale
+  var yHwcScale = d3
     .scaleSqrt()
-    .domain(d3.extent(data, (d) => d.hwcEnergyCnt))
-    .range([drawSize.height, margin.top]);
+    .domain(d3.extent(data, (d) => d.HwcUsage))
+    .range([drawSize.height, margin.top])
+    .nice();
 
-  var yCntAxis = d3.axisRight()
-    .scale(yCntScale)
+  var yHwcAxis = d3.axisRight()
+    .scale(yHwcScale)
     .tickFormat(d3.format(".3s")); // format naukowy z 3 cyframi
 
-  chart.append("g").call(yCntAxis)
+  chart.append("g").call(yHwcAxis)
     .attr("transform", `translate(${drawSize.width},0)`)
-    .selectAll("text").style("stroke", colorHcCnt);
+    .selectAll("text").style("stroke", colorHwc);
 
   //kreskowane ticks
   chart.selectAll("line")
@@ -117,50 +118,33 @@ function drawChart(data) {
 
 
   // hwcEnergySum
-  let hwcEnergySum = 
+  let hcUsageLine = 
     chart.append("path")
     .datum(data)
     .attr("fill", "none")
-    .attr("stroke", colorHwcSum)
-    .attr("stroke-width", 2.5)
+    .attr("stroke", colorHc)
+//    .attr("stroke-width", 2.5)
     .attr("d", d3.line()
       .x(d => xScale(d.date))
-      .y(d => ySumScale(d.hwcEnergySum)));
+      .y(d => yHcScale(d.HcUsage)));
 
   // hcEnergyCnt
-  let hcEnergyCnt = 
+  let hwcUsageLine = 
     chart.append("path")
     .datum(data)
     .attr("fill", "none")
-    .attr("stroke", colorHcCnt)
-    .attr("stroke-width", 2.5)
+    .attr("stroke", colorHwc)
+//    .attr("stroke-width", 2.5)
     .attr("d", d3.line()
       .x((d) => xScale(d.date))
-      .y((d) => yCntScale(d.hcEnergyCnt)));
+      .y((d) => yHwcScale(d.HwcUsage)));
 
-  // hwcEnergyCnt
-  let hwcEnergyCnt = 
-    chart.append("path")
-    .datum(data)
-    .attr("fill", "none")
-    .attr("stroke", colorHwcCnt)
-    .attr("stroke-width", 2.5)
-    .attr("d", d3.line()
-      .x((d) => xScale(d.date))
-      .y((d) => yCntScale(d.hwcEnergyCnt))
-    );
-
-
-
+  
   // Legend
-  chart.append("circle").attr("cx", margin.left).attr("cy", 20).attr("r", 6).style("fill", colorHcSum)
-  chart.append("circle").attr("cx", margin.left).attr("cy", 40).attr("r", 6).style("fill", colorHcCnt)
-  chart.append("circle").attr("cx", margin.left).attr("cy", 60).attr("r", 6).style("fill", colorHwcSum)
-  chart.append("circle").attr("cx", margin.left).attr("cy", 80).attr("r", 6).style("fill", colorHwcCnt)
-  chart.append("text").attr("x", margin.left + 10).attr("y", 25).text("hcEnergyCnt").style("font-size", "15px").attr("alignment-baseline", "middle")
-  chart.append("text").attr("x", margin.left + 10).attr("y", 45).text("hcEnergySum").style("font-size", "15px").attr("alignment-baseline", "middle")
-  chart.append("text").attr("x", margin.left + 10).attr("y", 65).text("hwcEnergyCnt").style("font-size", "15px").attr("alignment-baseline", "middle")
-  chart.append("text").attr("x", margin.left + 10).attr("y", 85).text("hwcEnergySum").style("font-size", "15px").attr("alignment-baseline", "middle")
+  chart.append("circle").attr("cx", margin.left).attr("cy", 20).attr("r", 6).style("fill", colorHc)
+  chart.append("circle").attr("cx", margin.left).attr("cy", 40).attr("r", 6).style("fill", colorHwc)
+  chart.append("text").attr("x", margin.left + 10).attr("y", 25).text("Hc usage").style("font-size", "15px").attr("alignment-baseline", "middle")
+  chart.append("text").attr("x", margin.left + 10).attr("y", 45).text("Hwc usage").style("font-size", "15px").attr("alignment-baseline", "middle")
 
 
 
@@ -178,17 +162,13 @@ function drawChart(data) {
    let xz = event.transform.rescaleX(xScale);
   
    //zoom linii danych
-   hwcEnergySum.attr("d", d3.line()
-     .x(d => xz(d.date))
-     .y(d => ySumScale(d.hwcEnergySum)));
-
    hcEnergyCnt.attr("d", d3.line()
      .x(d => xz(d.date))
-     .y(d => yCntScale(d.hcEnergyCnt)));
+     .y(d => yHcScale(d.hcEnergyCnt)));
 
    hwcEnergyCnt.attr("d", d3.line()
      .x(d => xz(d.date))
-     .y(d => yCntScale(d.hwcEnergyCnt)));
+     .y(d => yHwcScale(d.hwcEnergyCnt)));
 
    //zoom osi x  
    gX.call(xAxis.scale(xz));

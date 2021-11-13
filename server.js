@@ -6,7 +6,10 @@ var config = require("./config.json");
 var sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 const dbPath = 'vaillant.db';
-const { DateTime } = require("luxon");
+
+const pageSize = 1008; // a week
+const ip = config.interface;
+const port = config.port;
 
 app.engine(".html", require("ejs").__express);
 app.set("views", [path.join(__dirname, "views")]);//, path.join(__dirname, "panZoom")]);
@@ -15,50 +18,62 @@ app.use(express.static("views"));
 app.use('/favicon.ico', express.static('favicon.ico'));
 app.use(cors())
 
-
-const ip = config.interface;
-const port = config.port;
-
 var apiAddress = `http://${ip}:${port}`
 
+
 // Start server
-app.listen(port, config.interface, 
-  () => console.log(apiAddress));
+app.listen(port, ip, () => console.log(apiAddress));
 
 // main www  
 app.get("/", function (req, res) {
-  res.render("plotTemp", {json: "ddddddddd"});
+  res.render("plotTemp", { json: "ddddddddd" });
 });
 
 // temp API
 app.get("/api/temps", (req, res) => {
-  var sql = "select * from temps";
-  getDbData(sql, req, res);
+  let sql = 'SELECT id, date, indoor, outdoor, hwcWater FROM temps ORDER BY id DESC';
+  if (req.query.page !== undefined && !isNaN(req.query.page)) {
+    let page = req.query.page - 1;
+    sql += ` LIMIT ${pageSize} OFFSET ${page * pageSize}`
+  }
+  getDbData(sql, res);
 });
+
 
 // param API
 app.get("/api/parms", (req, res) => {
-  var sql = "select * from params";
-  getDbData(sql, req, res);
+  let sql = 'SELECT * FROM params ORDER BY id DESC';
+  if (req.query.page !== undefined && !isNaN(req.query.page)) {
+    let page = req.query.page - 1;
+    sql += ` LIMIT ${pageSize} OFFSET ${page * pageSize}`
+  }
+  getDbData(sql, res);
 });
 
 // energy API
 app.get("/api/energy", (req, res) => {
-  var sql = "select * from energy";
-  getDbData(sql, req, res);
+  //let sql = 'SELECT * FROM energy ORDER BY id DESC';
+  let sql = "SELECT e.Date, MAX(e.HcEnergyCnt) - MIN(e.HcEnergyCnt) as HcUsage, MAX(e.HwcEnergyCnt) - MIN(e.HwcEnergyCnt) as HwcUsage FROM Energy AS e GROUP BY CAST(strftime('%Y', e.Date) AS INTEGER), CAST(strftime('%m', e.Date) AS INTEGER), CAST(strftime('%d', e.Date) AS INTEGER)"
+  //let sql = "SELECT CAST(strftime('%Y', e.Date) AS INTEGER), CAST(strftime('%m', e.Date) AS INTEGER), CAST(strftime('%d', e.Date) AS INTEGER), MAX(e.HcEnergyCnt) - MIN(e.HcEnergyCnt), MAX(e.HwcEnergyCnt) - MIN(e.HwcEnergyCnt) FROM Energy AS e GROUP BY CAST(strftime('%Y', e.Date) AS INTEGER), CAST(strftime('%m', e.Date) AS INTEGER), CAST(strftime('%d', e.Date) AS INTEGER)"
+  // if (req.query.page !== undefined && !isNaN(req.query.page)) {
+  //   let page = req.query.page -1;  
+  //   sql += ` LIMIT ${pageSize} OFFSET ${page * pageSize}`
+  // }
+  getDbData(sql, res);
 });
 
 
-function getDbData(sql, req, res) {
+
+function getDbData(sql, res) {
   let db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
       console.error(err.message);
     }
     console.log("Connected to the Vaillant database.");
   });
-  db.all(sql, (err, row) => {
-    res.json(row);
-  });
+
+  db.all(sql, (err, row) => res.json(row));
+
   db.close((err) => {
     if (err) {
       console.error(err.message);
@@ -66,6 +81,70 @@ function getDbData(sql, req, res) {
     console.log("Close the database connection.");
   });
 }
+
+
+
+function getDbData2(sql, res) {
+  let db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log("Connected to the Vaillant database.");
+  });
+
+  db.all(sql, (err, row) => {
+
+    if (err) {
+      return console.error(err.message);
+    }
+
+    let outArr = new Array();
+    let i = 0;
+    row.forEach(element => {
+      
+    });
+    
+    for (let i = 0; i < row.length; i++) {
+      if (row[i].hwcEnergyCnt != row[i + 1].hwcEnergyCnt) {
+        outArr.push(row)
+      }
+    }
+    res.json(outArr)
+  });
+
+  db.close((err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log("Close the database connection.");
+  });
+}
+
+
+function getDbDataParm(sql, parms, res) {
+  let db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log("Connected to the Vaillant database.");
+  });
+
+  let sqlQuery = 'SELECT id, date, indoor, outdoor, hwcWater FROM ? ORDER BY id DESC';
+  if (parms.length > 1) {
+    sqlQuery = + ' LIMIT ? OFFSET ?'
+  }
+
+  let sqlW = db.prepare(sqlQuery);
+  sqlW.run(parms, (err, row) => res.json(row))
+
+  db.close((err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log("Close the database connection.");
+  });
+}
+
 
 module.exports = app;
 // app.get("/a", function (req, res) {

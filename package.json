@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "node bar_chart_helper_test.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "debug": "node --debug-brk server.js"
   },
   "author": "",
   "license": "ISC",

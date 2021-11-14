@@ -52,9 +52,10 @@ app.get("/api/parms", (req, res) => {
 
 // energy API
 app.get("/api/energy", (req, res) => {
-  //let sql = 'SELECT * FROM energy ORDER BY id DESC';
+  //let sql = "SELECT e.Date, MAX(e.HcEnergySum) - MIN(e.HcEnergySum) as HcUsage, MAX(e.HwcEnergySum) - MIN(e.HwcEnergySum) as HwcUsage FROM Energy AS e GROUP BY CAST(strftime('%Y', e.Date) AS INTEGER), CAST(strftime('%m', e.Date) AS INTEGER), CAST(strftime('%d', e.Date) AS INTEGER)"
+
   let sql = "SELECT e.Date, MAX(e.HcEnergyCnt) - MIN(e.HcEnergyCnt) as HcUsage, MAX(e.HwcEnergyCnt) - MIN(e.HwcEnergyCnt) as HwcUsage FROM Energy AS e GROUP BY CAST(strftime('%Y', e.Date) AS INTEGER), CAST(strftime('%m', e.Date) AS INTEGER), CAST(strftime('%d', e.Date) AS INTEGER)"
-  //let sql = "SELECT CAST(strftime('%Y', e.Date) AS INTEGER), CAST(strftime('%m', e.Date) AS INTEGER), CAST(strftime('%d', e.Date) AS INTEGER), MAX(e.HcEnergyCnt) - MIN(e.HcEnergyCnt), MAX(e.HwcEnergyCnt) - MIN(e.HwcEnergyCnt) FROM Energy AS e GROUP BY CAST(strftime('%Y', e.Date) AS INTEGER), CAST(strftime('%m', e.Date) AS INTEGER), CAST(strftime('%d', e.Date) AS INTEGER)"
+
   // if (req.query.page !== undefined && !isNaN(req.query.page)) {
   //   let page = req.query.page -1;  
   //   sql += ` LIMIT ${pageSize} OFFSET ${page * pageSize}`

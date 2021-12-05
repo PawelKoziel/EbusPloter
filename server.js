@@ -12,9 +12,13 @@ const ip = config.interface;
 const port = config.port;
 
 app.engine(".html", require("ejs").__express);
-app.set("views", [path.join(__dirname, "views")]);//, path.join(__dirname, "panZoom")]);
 app.set("view engine", "html");
+
 app.use(express.static("views"));
+app.use(express.static(__dirname + '/node_modules/bootstrap/dist'));
+app.use(express.static(__dirname + '/node_modules/jquery/dist'));
+app.use(express.static(__dirname + '/node_modules/d3/dist'));
+
 app.use('/favicon.ico', express.static('favicon.ico'));
 app.use(cors())
 

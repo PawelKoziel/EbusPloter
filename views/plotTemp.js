@@ -61,10 +61,15 @@ function drawChart(temps) {
   // Add X axis
   var xAxis = d3.axisBottom()
     .scale(xScale)
-    .tickFormat(d3.timeFormat('%d-%m / %H:%M'));
+    .tickFormat(d3.timeFormat('%d-%m'))
+    .ticks(20)
+    .tickSize(-drawSize.height)
+  //.tickFormat(d3.timeFormat('%d-%m / %H:%M'));
 
   var gX = chart.append("g")
     .attr("transform", `translate(0,${drawSize.height})`)
+    .classed('y', true)
+    .classed('axis', true)
     .call(xAxis)
 
   gX.selectAll("text")
@@ -108,6 +113,7 @@ function drawChart(temps) {
     //.attr("stroke-width", 2.5)
     .attr("d",
       d3.line()
+        //.curve(d3.curveBundle.beta(0.6))
         .x(d => xScale(d.date))
         .y(d => yScale(d.hwcWater))
     );
@@ -135,6 +141,7 @@ function drawChart(temps) {
     //.attr("stroke-width", 2.5)
     .attr("d",
       d3.line()
+        //  .curve(d3.curveBundle.beta(0.021)) //linia trendu
         .x(d => xScale(d.date))
         .y(d => yScale(d.outdoor))
     );

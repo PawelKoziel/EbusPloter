@@ -20,10 +20,11 @@ function drawChart(data) {
   data.forEach(d => {
     //d.date = d3.isoParse(d.date);
     d.power = (d.power / 100)
+    d.valvePosition = (1 + d.valvePosition / 400) //chart looks better that way
   });
 
 
-  const colorFlame = "black";
+  const colorValve = "black";
   const colorPower = "#e02e2e";
   const colorPress = "#30b0d9";
 
@@ -51,7 +52,7 @@ function drawChart(data) {
 
 
   // -------------------------------------- oś X ----------------------------
-  // Add X scale
+  //Add X scale
   var xScale = d3.scaleLinear()
     .domain(d3.extent(data, d => d.id))
     .range([margin.left, drawSize.width]);
@@ -71,6 +72,32 @@ function drawChart(data) {
     .attr("dy", ".15em")
     .attr("transform", "rotate(-75)");
 
+
+
+    // var xScale = d3.scaleTime()
+    // .domain(d3.extent(data, d => d.date))
+    // .range([margin.left, drawSize.width])
+
+
+  // Add X axis
+  // var xAxis = d3.axisBottom()
+  //   .scale(xScale)
+  //   .tickFormat(d3.timeFormat('%d-%m'))
+  //   .ticks(20)
+  //   .tickSize(-drawSize.height)
+  // //.tickFormat(d3.timeFormat('%d-%m / %H:%M'));
+
+  // var gX = chart.append("g")
+  //   .attr("transform", `translate(0,${drawSize.height})`)
+  //   .classed('y', true)
+  //   .classed('axis', true)
+  //   .call(xAxis)
+
+  //   gX.selectAll("text")
+  //   .style("text-anchor", "end")
+  //   .attr("dx", "-.8em")
+  //   .attr("dy", ".15em")
+  //   .attr("transform", "rotate(-75)");
 
 
   // -------------------------------------- oś Y ----------------------------
@@ -110,16 +137,16 @@ function drawChart(data) {
   //   .attr("alignment-baseline", "middle");
 
 
-  //flame
-  var flame = chart
+  //valvePosition
+  var valvePosition = chart
     .append("path")
     .datum(data)
     .attr("fill", "none")
-    .attr("stroke", colorFlame)
-    .attr("stroke-width", 2.5)
+    .attr("stroke", colorValve)
+//    
     .attr("d", d3.line()
       .x((d) => xScale(d.id))
-      .y((d) => yScale(d.flame))
+      .y((d) => yScale(d.valvePosition))
     );
 
   //power
@@ -140,7 +167,6 @@ function drawChart(data) {
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", colorPress)
-    .attr("stroke-width", 2.5)
     .attr("d", d3.line()
       .x((d) => xScale(d.id))
       .y((d) => yScale(d.waterpressure))
@@ -149,16 +175,16 @@ function drawChart(data) {
   // Legend
   chart.append("circle").attr("cx", totalSize.width - 100).attr("cy", 20).attr("r", 6).style("fill", colorPress)
   chart.append("circle").attr("cx", totalSize.width - 100).attr("cy", 40).attr("r", 6).style("fill", colorPower)
-  chart.append("circle").attr("cx", totalSize.width - 100).attr("cy", 60).attr("r", 6).style("fill", colorFlame)
+  chart.append("circle").attr("cx", totalSize.width - 100).attr("cy", 60).attr("r", 6).style("fill", colorValve)
   chart.append("text").attr("x", totalSize.width - 90).attr("y", 25).text("pressure").style("font-size", "15px").attr("alignment-baseline", "middle")
   chart.append("text").attr("x", totalSize.width - 90).attr("y", 45).text("power").style("font-size", "15px").attr("alignment-baseline", "middle")
-  chart.append("text").attr("x", totalSize.width - 90).attr("y", 65).text("flame").style("font-size", "15px").attr("alignment-baseline", "middle")
+  chart.append("text").attr("x", totalSize.width - 90).attr("y", 65).text("valvePosition").style("font-size", "15px").attr("alignment-baseline", "middle")
 
 
 
   // -------------------------------------- zoom ----------------------------
   let zoom = d3.zoom()
-    .scaleExtent([0.5, 4]) //limity zoom
+    .scaleExtent([0.5, 8]) //limity zoom
     .translateExtent([[0, 0], [drawSize.width, drawSize.height]])
     .extent([[0, 0], [drawSize.width, drawSize.height]]) //limity draw
     .on("zoom", zoomed)
@@ -168,9 +194,9 @@ function drawChart(data) {
     let xz = event.transform.rescaleX(xScale);
 
     //zoom linii danych
-    flame.attr("d", d3.line()
+    valvePosition.attr("d", d3.line()
       .x(d => xz(d.id))
-      .y(d => yScale(d.flame)));
+      .y(d => yScale(d.valvePosition)));
 
     power.attr("d", d3.line()
       .x(d => xz(d.id))

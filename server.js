@@ -46,7 +46,7 @@ app.get("/api/temps", (req, res) => {
 
 // param API
 app.get("/api/parms", (req, res) => {
-  let sql = 'SELECT id, flame, waterpressure, power FROM params ORDER BY id DESC';
+  let sql = 'SELECT id, flame, waterpressure, power, valvePosition FROM params ORDER BY id DESC';
   //let sql = 'SELECT * FROM params ORDER BY id DESC';
   //let sql = 'SELECT  p.id, e.date, p.flame, p.waterpressure, p.power FROM params p JOIN energy e ON p.id = e.id ORDER BY p.id DESC'
   if (req.query.page !== undefined && !isNaN(req.query.page)) {
